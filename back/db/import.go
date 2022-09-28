@@ -1,9 +1,9 @@
-package database
+package db
 
 import (
 	"os"
 
-	"github.com/atedesch1/csi-flix/cmd/utils"
+	"github.com/atedesch1/csi-flix/utils"
 	"github.com/gocarina/gocsv"
 )
 
