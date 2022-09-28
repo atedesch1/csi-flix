@@ -11,7 +11,7 @@ const movies = ref(null);
 
 async function onsubmit () {
     try{
-        movies.value = (await api.get(`/movies/bytitle/${name.value}`));
+        movies.value = (await api.get(`/movie/bytitle/${name.value}`));
         console.log(movies.value);
         $q.notify({
             color: 'green-4',
