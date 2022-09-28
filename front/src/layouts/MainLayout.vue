@@ -2,7 +2,7 @@
     <q-layout view="hHh lpR fFf">
         <q-header
             elevated
-            class="bg-primary text-white"
+            class="bg-red-5 text-white"
         >
             <q-toolbar>
                 <q-toolbar-title>
