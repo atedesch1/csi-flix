@@ -11,8 +11,7 @@ type Database struct {
 }
 
 func SetupDB(url string) *Database {
-	dsn := "postgresql://root:root@localhost:5432/core"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(url), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}

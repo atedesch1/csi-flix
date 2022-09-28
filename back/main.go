@@ -2,13 +2,14 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/atedesch1/csi-flix/cmd/database"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db := database.SetupDB("postgresql://root:root@localhost:5432/core")
+	db := database.SetupDB(os.Getenv("DATABASE_URL"))
 	db.Migrate()
 	movies := database.ReadMovieCsv("assets/netflix_titles.csv")
 	db.PopulateDB(movies)
@@ -18,7 +19,12 @@ func main() {
 	r.GET("/movies", func(c *gin.Context) {
 		var movies []database.Movie
 
-		db.Db.Preload("Directors").Preload("Cast").Preload("Countries").Preload("Genres").Find(&movies)
+		db.Db.
+			Preload("Directors").
+			Preload("Cast").
+			Preload("Countries").
+			Preload("Genres").
+			Find(&movies)
 
 		c.JSON(http.StatusOK, movies)
 	})
@@ -27,7 +33,12 @@ func main() {
 		var movie database.Movie
 		id := c.Param("id")
 
-		tx := db.Db.Preload("Directors").Preload("Cast").Preload("Countries").Preload("Genres").First(&movie, id)
+		tx := db.Db.
+			Preload("Directors").
+			Preload("Cast").
+			Preload("Countries").
+			Preload("Genres").
+			First(&movie, id)
 
 		if tx.Error != nil {
 			c.JSON(http.StatusNotFound, nil)
@@ -40,7 +51,13 @@ func main() {
 		var movies []database.Movie
 		title := c.Param("title")
 
-		tx := db.Db.Preload("Directors").Preload("Cast").Preload("Countries").Preload("Genres").Where("Title LIKE ?", "%"+title+"%").Find(&movies)
+		tx := db.Db.
+			Preload("Directors").
+			Preload("Cast").
+			Preload("Countries").
+			Preload("Genres").
+			Where("Title LIKE ?", "%"+title+"%").
+			Find(&movies)
 
 		if tx.Error != nil {
 			c.JSON(http.StatusInternalServerError, nil)
