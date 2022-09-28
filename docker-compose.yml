@@ -37,8 +37,6 @@ services:
       - csi-flix
 
   web:
-    depends_on:
-      - api
     build:
       context: .
       dockerfile: Dockerfile.front
