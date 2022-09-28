@@ -17,30 +17,21 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/movies", func(c *gin.Context) {
-		var movies []database.Movie
+		movies, err := db.GetAllMovies()
 
-		db.Db.
-			Preload("Directors").
-			Preload("Cast").
-			Preload("Countries").
-			Preload("Genres").
-			Find(&movies)
-
-		c.JSON(http.StatusOK, movies)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "Internal Server Error")
+		} else {
+			c.JSON(http.StatusOK, movies)
+		}
 	})
 
 	r.GET("/movies/:id", func(c *gin.Context) {
-		var movie database.Movie
 		id := c.Param("id")
 
-		tx := db.Db.
-			Preload("Directors").
-			Preload("Cast").
-			Preload("Countries").
-			Preload("Genres").
-			First(&movie, id)
+		movie, err := db.GetMovieById(id)
 
-		if tx.Error != nil {
+		if err != nil {
 			c.JSON(http.StatusNotFound, nil)
 		} else {
 			c.JSON(http.StatusOK, movie)
@@ -48,19 +39,12 @@ func main() {
 	})
 
 	r.GET("/movies/bytitle/:title", func(c *gin.Context) {
-		var movies []database.Movie
 		title := c.Param("title")
 
-		tx := db.Db.
-			Preload("Directors").
-			Preload("Cast").
-			Preload("Countries").
-			Preload("Genres").
-			Where("Title iLIKE ?", "%"+title+"%").
-			Find(&movies)
+		movies, err := db.GetMoviesByTitle(title)
 
-		if tx.Error != nil {
-			c.JSON(http.StatusInternalServerError, nil)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, "Internal Server Error")
 		} else {
 			c.JSON(http.StatusOK, movies)
 		}
