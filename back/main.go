@@ -56,7 +56,7 @@ func main() {
 			Preload("Cast").
 			Preload("Countries").
 			Preload("Genres").
-			Where("Title LIKE ?", "%"+title+"%").
+			Where("Title iLIKE ?", "%"+title+"%").
 			Find(&movies)
 
 		if tx.Error != nil {
