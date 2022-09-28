@@ -1,7 +1,6 @@
 package database
 
 import (
-	"github.com/atedesch1/csi-flix/cmd/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -68,48 +67,6 @@ func SetupDB(url string) *Database {
 	return database
 }
 
-func (db *Database) PopulateDB(csv []*MovieCsv) (tx *gorm.DB) {
-	movies := make([]*Movie, len(csv))
-
-	for idx, movie := range csv {
-		directorNames := utils.SplitAndTrim(movie.Directors, ",")
-		directors := make([]Director, len(directorNames))
-		for i, directorName := range directorNames {
-			directors[i] = Director{Name: directorName}
-		}
-
-		actorNames := utils.SplitAndTrim(movie.Cast, ",")
-		cast := make([]Actor, len(actorNames))
-		for i, actorName := range actorNames {
-			cast[i] = Actor{Name: actorName}
-		}
-
-		countryNames := utils.SplitAndTrim(movie.Countries, ",")
-		countries := make([]Country, len(countryNames))
-		for i, countryName := range countryNames {
-			countries[i] = Country{Name: countryName}
-		}
-
-		genreNames := utils.SplitAndTrim(movie.Genres, ",")
-		genres := make([]Genre, len(genreNames))
-		for i, genreName := range genreNames {
-			genres[i] = Genre{Name: genreName}
-		}
-
-		movies[idx] = &Movie{
-			Type:        movie.Type,
-			Title:       movie.Title,
-			Directors:   directors,
-			Cast:        cast,
-			Countries:   countries,
-			DateAdded:   movie.DateAdded,
-			ReleaseYear: movie.ReleaseYear,
-			Rating:      movie.Rating,
-			Duration:    movie.Duration,
-			Genres:      genres,
-			Description: movie.Description,
-		}
-	}
-
+func (db *Database) PopulateDB(movies []*Movie) (tx *gorm.DB) {
 	return db.gormDb.CreateInBatches(movies, 1000)
 }

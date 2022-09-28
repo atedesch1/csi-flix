@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	csv := database.ReadMovieCsv("assets/netflix_titles.csv")
 	db := database.SetupDB("postgresql://root:root@localhost:5432/core")
-	db.PopulateDB(csv)
+	movies := database.ReadMovieCsv("assets/netflix_titles.csv")
+	db.PopulateDB(movies)
 }
