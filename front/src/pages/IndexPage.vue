@@ -7,11 +7,23 @@ const $q = useQuasar();
 
 const name: Ref<string | null> = ref(null);
 const accept = ref(null);
-const movies = ref(null);
-
+const movies: Ref<Array<Movie> | null> = ref(null);
+interface Movie {
+    Cast: Array<string>;
+    Countries: Array<string>;
+    DateAdded: string;
+    Directors: Array<string>;
+    Description: string;
+    Duration: string;
+    Genres: Array<string>;
+    Rating: string;
+    ReleaseYear: string;
+    Title: string;
+    Type: string;
+}
 async function onsubmit () {
     try{
-        movies.value = (await api.get(`/movie/bytitle/${name.value}`));
+        movies.value = (await api.get(`/movie/bytitle/${name.value}`)).data;
         console.log(movies.value);
         $q.notify({
             color: 'green-4',
@@ -71,8 +83,24 @@ function research() {
     </div>
     <div
         v-else
-        class="movies"
+        class="movies q-my-xl"
     >
+        <q-list bordered class="list rounded-borders q-mb-xl">
+            <q-expansion-item
+                v-for="movie in movies"
+                :key="movie.Title"
+                expand-separator
+                icon="assessment"
+                :label="movie.Title"
+                :caption="movie.Countries[0]"
+            >
+                <q-card>
+                    <q-card-section>
+                        {{ movie.Description }}
+                    </q-card-section>
+                </q-card>
+            </q-expansion-item>
+        </q-list>
         <q-btn
             label="Search another"
             color="red-5"
@@ -82,10 +110,14 @@ function research() {
 </template>
 
 <style scoped lang="scss">
+.list{
+    width: 50%;
+}
 .movies {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -93,9 +125,11 @@ function research() {
     width: 30%;
 }
 .wrapper{
-    width: 100vw;
-    height: 100vh;
+    margin-top: 10rem;
+    width: 100%;
+    height: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
