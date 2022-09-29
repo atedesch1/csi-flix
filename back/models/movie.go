@@ -71,10 +71,11 @@ func (m Movie) GetDbWithPreloadedMovieAssociations() *gorm.DB {
 		Preload("Genres")
 }
 
-func (m Movie) GetAll() ([]Movie, error) {
+func (m Movie) GetAll(limit int) ([]Movie, error) {
 	var dbMovies []db.Movie
 
 	tx := m.GetDbWithPreloadedMovieAssociations().
+		Limit(limit).
 		Find(&dbMovies)
 
 	return DbMoviesToMovies(dbMovies), tx.Error

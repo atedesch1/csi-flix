@@ -12,7 +12,21 @@ type MovieController struct{}
 var movieModel = new(models.Movie)
 
 func (u MovieController) GetAll(c *gin.Context) {
-	movies, err := movieModel.GetAll()
+	limitQuery := c.Query("limit")
+
+	if limitQuery == "" {
+		limitQuery = "100"
+	}
+
+	limit, err := strconv.Atoi(limitQuery)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "limit query badly formatted"})
+		c.Abort()
+		return
+	}
+
+	movies, err := movieModel.GetAll(limit)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "couldn't retrieve movies", "error": err})
