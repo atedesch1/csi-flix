@@ -34,8 +34,8 @@ interface Movie {
 }
 async function onsubmit () {
     try{
-        name.value = null;
         movies.value = (await api.get(`/movie/bytitle/${name.value}?stats=true`)).data;
+        name.value = null;
         console.log(movies.value);
         $q.notify({
             color: 'green-4',
@@ -110,25 +110,49 @@ function research() {
                 :caption="movie.Movie.Type"
             >
                 <q-card>
-                    <q-card-section>
-                        <span class="text-weight-bold">Description: </span>
-                        <span>{{ movie.Movie.Description }}</span>
-                    </q-card-section>
-                    <q-card-section>
-                        <span class="text-weight-bold">Country: </span>
-                        <span>{{ movie.Movie.Countries[0] }}</span>
-                    </q-card-section>
-                    <q-card-section>
-                        <span class="text-weight-bold">Genre: </span>
-                        <span>{{ movie.Movie.Genres[0] }}</span>
-                    </q-card-section>
-                    <q-card-section>
-                        <span class="text-weight-bold">Rating: </span>
-                        <span>{{ movie.Movie.Rating }}</span>
-                    </q-card-section>
-                    <q-card-section>
-                        <span class="text-weight-bold">Awards: </span>
-                        <span>{{ movie.Stats.Awards }}</span>
+                    <q-card-section horizontal>
+                        <q-card-section class="inner-content">
+                            <q-card-section class="text-weight-bold text-h6">Movie</q-card-section>
+                            <q-card-section>
+                                <span class="text-weight-bold">Description: </span>
+                                <span>{{ movie.Movie.Description }}</span>
+                            </q-card-section>
+                            <q-card-section>
+                                <span class="text-weight-bold">Country: </span>
+                                <span>{{ movie.Movie.Countries[0] }}</span>
+                            </q-card-section>
+                            <q-card-section>
+                                <span class="text-weight-bold">Genre: </span>
+                                <span>{{ movie.Movie.Genres[0] }}</span>
+                            </q-card-section>
+                            <q-card-section>
+                                <span class="text-weight-bold">Rating: </span>
+                                <span>{{ movie.Movie.Rating }}</span>
+                            </q-card-section>
+                        </q-card-section>
+                        <q-card-section class="inner-content">
+                            <q-card-section class="text-weight-bold text-h6">Stats</q-card-section>
+                            <q-card-section v-if="movie.Stats.Awards !== ''">
+                                <span class="text-weight-bold">Awards: </span>
+                                <span>{{ movie.Stats.Awards }}</span>
+                            </q-card-section>
+                            <q-card-section v-if="movie.Stats.BoxOffice !== ''">
+                                <span class="text-weight-bold">BoxOffice: </span>
+                                <span>{{ movie.Stats.BoxOffice }}</span>
+                            </q-card-section>
+                            <q-card-section v-if="movie.Stats.Metascore !== ''">
+                                <span class="text-weight-bold">Metascore: </span>
+                                <span>{{ movie.Stats.Metascore }}</span>
+                            </q-card-section>
+                            <q-card-section v-if="movie.Stats.imdbRating !== ''">
+                                <span class="text-weight-bold">imdbRating: </span>
+                                <span>{{ movie.Stats.imdbRating }}</span>
+                            </q-card-section>
+                            <q-card-section v-if="movie.Stats.imdbVotes !== ''">
+                                <span class="text-weight-bold">imdbVotes: </span>
+                                <span>{{ movie.Stats.imdbVotes }}</span>
+                            </q-card-section>
+                        </q-card-section>
                     </q-card-section>
                 </q-card>
             </q-expansion-item>
@@ -142,8 +166,11 @@ function research() {
 </template>
 
 <style scoped lang="scss">
-.list{
+.inner-content{
     width: 50%;
+}
+.list{
+    width: 70%;
 }
 .movies {
     width: 100%;
