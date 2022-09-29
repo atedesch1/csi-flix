@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
+	"github.com/atedesch1/csi-flix/api"
 	"github.com/atedesch1/csi-flix/models"
 	"github.com/gin-gonic/gin"
 )
@@ -56,19 +58,36 @@ func (u MovieController) GetById(c *gin.Context) {
 }
 
 func (u MovieController) GetByTitle(c *gin.Context) {
-	if c.Param("title") != "" {
-		movies, err := movieModel.GetByTitle(c.Param("title"))
+	stats := c.Query("stats")
+	title := c.Param("title")
 
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "couldn't retrieve movies", "error": err})
-			c.Abort()
-			return
-		}
-
-		c.JSON(http.StatusOK, movies)
+	if title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+		c.Abort()
 		return
 	}
 
-	c.JSON(http.StatusBadRequest, gin.H{"message": "bad request"})
-	c.Abort()
+	movies, err := movieModel.GetByTitle(title)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "couldn't retrieve movies", "error": err})
+		c.Abort()
+		return
+	}
+
+	if stats == "true" {
+		result := make([]map[string]interface{}, len(movies))
+
+		for i, movie := range movies {
+			stats := api.GetMovieStatsFromApi(movie.Title)
+			result[i] = map[string]interface{}{
+				"movie": movie,
+				"stats": stats,
+			}
+		}
+		c.JSON(http.StatusOK, result)
+		return
+	}
+
+	c.JSON(http.StatusOK, movies)
 }
