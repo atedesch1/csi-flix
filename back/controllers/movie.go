@@ -81,8 +81,8 @@ func (u MovieController) GetByTitle(c *gin.Context) {
 		for i, movie := range movies {
 			stats := api.GetMovieStatsFromApi(movie.Title)
 			result[i] = map[string]interface{}{
-				"movie": movie,
-				"stats": stats,
+				"Movie": movie,
+				"Stats": stats,
 			}
 		}
 		c.JSON(http.StatusOK, result)
