@@ -2,6 +2,7 @@
 import { useQuasar } from 'quasar';
 import { api } from 'boot/axios';
 import { Ref, ref } from 'vue';
+import { matSlideshow, matMovie } from '@quasar/extras/material-icons';
 
 const $q = useQuasar();
 
@@ -9,21 +10,32 @@ const name: Ref<string | null> = ref(null);
 const accept = ref(null);
 const movies: Ref<Array<Movie> | null> = ref(null);
 interface Movie {
-    Cast: Array<string>;
-    Countries: Array<string>;
-    DateAdded: string;
-    Directors: Array<string>;
-    Description: string;
-    Duration: string;
-    Genres: Array<string>;
-    Rating: string;
-    ReleaseYear: string;
-    Title: string;
-    Type: string;
+    Stats: {
+        BoxOffice: string;
+        Ratings: Array<Map<string, string>>;
+        Metascore: string;
+        Awards: string;
+        imdbRating: string;
+        imdbVotes: string;
+    };
+    Movie: {
+        Cast: Array<string>;
+        Countries: Array<string>;
+        DateAdded: string;
+        Directors: Array<string>;
+        Description: string;
+        Duration: string;
+        Genres: Array<string>;
+        Rating: string;
+        ReleaseYear: string;
+        Title: string;
+        Type: string;
+    };
 }
 async function onsubmit () {
     try{
-        movies.value = (await api.get(`/movie/bytitle/${name.value}`)).data;
+        name.value = null;
+        movies.value = (await api.get(`/movie/bytitle/${name.value}?stats=true`)).data;
         console.log(movies.value);
         $q.notify({
             color: 'green-4',
@@ -60,7 +72,7 @@ function research() {
             <q-input
                 v-model="name"
                 filled
-                label="Movie nameeee"
+                label="Movie name"
                 hint="Search the movie"
                 lazy-rules
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
@@ -85,18 +97,38 @@ function research() {
         v-else
         class="movies q-my-xl"
     >
-        <q-list bordered class="list rounded-borders q-mb-xl">
+        <q-list
+            bordered
+            class="list rounded-borders q-mb-xl"
+        >
             <q-expansion-item
                 v-for="movie in movies"
-                :key="movie.Title"
+                :key="movie.Movie.Title"
                 expand-separator
-                icon="assessment"
-                :label="movie.Title"
-                :caption="movie.Countries[0]"
+                :icon="movie.Movie.Genres[0] !== 'TV Show' ? matSlideshow : matMovie"
+                :label="movie.Movie.Title"
+                :caption="movie.Movie.Type"
             >
                 <q-card>
                     <q-card-section>
-                        {{ movie.Description }}
+                        <span class="text-weight-bold">Description: </span>
+                        <span>{{ movie.Movie.Description }}</span>
+                    </q-card-section>
+                    <q-card-section>
+                        <span class="text-weight-bold">Country: </span>
+                        <span>{{ movie.Movie.Countries[0] }}</span>
+                    </q-card-section>
+                    <q-card-section>
+                        <span class="text-weight-bold">Genre: </span>
+                        <span>{{ movie.Movie.Genres[0] }}</span>
+                    </q-card-section>
+                    <q-card-section>
+                        <span class="text-weight-bold">Rating: </span>
+                        <span>{{ movie.Movie.Rating }}</span>
+                    </q-card-section>
+                    <q-card-section>
+                        <span class="text-weight-bold">Awards: </span>
+                        <span>{{ movie.Stats.Awards }}</span>
                     </q-card-section>
                 </q-card>
             </q-expansion-item>
