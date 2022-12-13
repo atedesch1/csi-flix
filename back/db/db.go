@@ -17,6 +17,7 @@ func Init() {
 	}
 
 	db.AutoMigrate(&Movie{})
+	db.AutoMigrate(&Review{})
 	movies := ReadMovieCsv("assets/netflix_titles.csv")
 	db.CreateInBatches(movies, 1000)
 }

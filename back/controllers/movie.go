@@ -28,7 +28,8 @@ func (u MovieController) GetAll(c *gin.Context) {
 		return
 	}
 
-	movies, err := movieModel.GetAll(limit)
+	dbMovies, err := movieModel.GetAll(limit)
+	movies := models.DbMoviesToMovies(dbMovies)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "couldn't retrieve movies", "error": err})
@@ -41,7 +42,8 @@ func (u MovieController) GetAll(c *gin.Context) {
 
 func (u MovieController) GetById(c *gin.Context) {
 	if c.Param("id") != "" {
-		movie, err := movieModel.GetById(c.Param("id"))
+		dbMovie, err := movieModel.GetById(c.Param("id"))
+		movie := models.DbMovieToMovie(dbMovie)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "couldn't retrieve movie", "error": err})
@@ -67,7 +69,8 @@ func (u MovieController) GetByTitle(c *gin.Context) {
 		return
 	}
 
-	movies, err := movieModel.GetByTitle(title)
+	dbMovies, err := movieModel.GetByTitle(title)
+	movies := models.DbMoviesToMovies(dbMovies)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "couldn't retrieve movies", "error": err})

@@ -17,6 +17,7 @@ type Movie struct {
 	Duration    string
 	Genres      []string
 	Description string
+	Reviews     []Review
 }
 
 func DbMovieToMovie(dbMovie db.Movie) Movie {
@@ -40,6 +41,11 @@ func DbMovieToMovie(dbMovie db.Movie) Movie {
 		genres[i] = genre.Name
 	}
 
+	reviews := make([]Review, 0)
+	for _, dbReview := range dbMovie.Reviews {
+		reviews = append(reviews, DbReviewToReview(dbReview))
+	}
+
 	return Movie{
 		Type:        dbMovie.Type,
 		Title:       dbMovie.Title,
@@ -52,6 +58,7 @@ func DbMovieToMovie(dbMovie db.Movie) Movie {
 		Duration:    dbMovie.Duration,
 		Genres:      genres,
 		Description: dbMovie.Description,
+		Reviews:     reviews,
 	}
 }
 
@@ -68,34 +75,36 @@ func (m Movie) GetDbWithPreloadedMovieAssociations() *gorm.DB {
 		Preload("Directors").
 		Preload("Cast").
 		Preload("Countries").
-		Preload("Genres")
+		Preload("Genres").
+		Preload("Reviews")
+
 }
 
-func (m Movie) GetAll(limit int) ([]Movie, error) {
+func (m Movie) GetAll(limit int) ([]db.Movie, error) {
 	var dbMovies []db.Movie
 
 	tx := m.GetDbWithPreloadedMovieAssociations().
 		Limit(limit).
 		Find(&dbMovies)
 
-	return DbMoviesToMovies(dbMovies), tx.Error
+	return dbMovies, tx.Error
 }
 
-func (m Movie) GetById(id string) (Movie, error) {
+func (m Movie) GetById(id string) (db.Movie, error) {
 	var dbMovie db.Movie
 
 	tx := m.GetDbWithPreloadedMovieAssociations().
 		First(&dbMovie, id)
 
-	return DbMovieToMovie(dbMovie), tx.Error
+	return dbMovie, tx.Error
 }
 
-func (m Movie) GetByTitle(title string) ([]Movie, error) {
+func (m Movie) GetByTitle(title string) ([]db.Movie, error) {
 	var dbMovies []db.Movie
 
 	tx := m.GetDbWithPreloadedMovieAssociations().
 		Where("Title iLIKE ?", "%"+title+"%").
 		Find(&dbMovies)
 
-	return DbMoviesToMovies(dbMovies), tx.Error
+	return dbMovies, tx.Error
 }

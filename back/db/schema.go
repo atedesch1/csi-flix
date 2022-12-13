@@ -18,6 +18,8 @@ type Movie struct {
 	Duration    string
 	Genres      []Genre `gorm:"many2many:movie_genres;references:Name"`
 	Description string
+
+	Reviews []Review `gorm:"foreignKey:MovieID"`
 }
 
 type Director struct {
@@ -42,4 +44,14 @@ type Genre struct {
 	gorm.Model `json:"-"`
 
 	Name string `gorm:"index:,unique"`
+}
+
+type Review struct {
+	gorm.Model `json:"-"`
+	MovieID    uint
+
+	Rating    uint
+	Content   string
+	Anonymous bool
+	Username  string
 }

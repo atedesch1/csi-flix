@@ -82,5 +82,6 @@ func (m *MovieCsv) ToMovie() *Movie {
 		Duration:    m.Duration,
 		Genres:      genres,
 		Description: m.Description,
+		Reviews:     make([]Review, 0),
 	}
 }
